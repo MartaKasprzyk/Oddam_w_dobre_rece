@@ -9,7 +9,7 @@ class LandingPageView(View):
 
 class AddDonationView(View):
     def get(self, request):
-        return render(request, 'base.html')
+        return render(request, 'form.html')
 
 
 class LoginView(View):
