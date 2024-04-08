@@ -1,4 +1,4 @@
-# Oddam_w_dobre_rece
+# Oddam w dobre rece
 
 Projekt realizowany w ramach PortfolioLab po kursie Python Developer w CodersLab.
 
