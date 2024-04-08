@@ -1,6 +1,8 @@
 {% load static %}
 <!DOCTYPE html>
+
 <html lang="pl">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +11,9 @@
     <title>{% block title %}{% endblock title %}</title>  
     <link rel="stylesheet" href="{% static "css/style.css" %}">
   </head>
+  
   <body>
+  
     <header>
       <nav class="container container--70">
         <ul class="nav--actions">
@@ -18,13 +22,16 @@
         </ul>
 
         <ul>
-          <li><a href="#">Start</a></li>
-          <li><a href="#">O co chodzi?</a></li>
-          <li><a href="#">O nas</a></li>
-          <li><a href="#">Fundacje i organizacje</a></li>
-          <li><a href="#">Kontakt</a></li>
+          <li><a href="#" class="btn btn--without-border">Start</a></li>
+          <li><a href="#" class="btn btn--without-border">O co chodzi?</a></li>
+          <li><a href="#" class="btn btn--without-border">O nas</a></li>
+          <li><a href="#" class="btn btn--without-border">Fundacje i organizacje</a></li>
+          <li>{% block navbar %}{% endblock navbar %}</li> 
+          <li><a href="#" class="btn btn--without-border">Kontakt</a></li>
         </ul>
       </nav>
+    
+      {% block header %}{% endblock header %}
     </header>
     
 <!-- //--------------------------- page content -------------------------// -->
@@ -46,7 +53,7 @@
         </form>
       </div>
       <div class="bottom-line">
-        <span class="bottom-line--copy">Copyright &copy; 2019</span>
+        <span class="bottom-line--copy">Copyright &copy; 2024</span>
         <div class="bottom-line--icons">
           <a href="#" class="btn btn--small"><img src="/static/images/icon-facebook.svg"/></a>
           <a href="#" class="btn btn--small"><img src="/static/images/icon-instagram.svg"/></a>
