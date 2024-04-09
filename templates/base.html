@@ -15,12 +15,6 @@
   <body>
     
     {% block header-top %}{% endblock header-top %}
-{#    <header>#}
-{#      <nav class="container container--70">#}
-{#        <ul class="nav--actions">#}
-{#          <li><a href="#">Zaloguj</a></li>#}
-{#          <li class="highlighted"><a href="#">Załóż konto</a></li>#}
-{#        </ul>#}
 
         <ul>
           <li><a href="#" class="btn btn--without-border active">Start</a></li>
@@ -30,9 +24,8 @@
           <li>{% block navbar %}{% endblock navbar %}</li> 
           <li><a href="#" class="btn btn--without-border">Kontakt</a></li>
         </ul>
-      </nav>
     
-      {% block header-bottom %}{% endblock header-bottom %}
+    {% block header-bottom %}{% endblock header-bottom %}
     
     
 <!-- //--------------------------- page content -------------------------// -->
