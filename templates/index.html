@@ -4,7 +4,16 @@
     <a href="form.html" class="btn btn--without-border">Przekaż dary</a>
 {% endblock navbar %}
 
-{% block header %}
+{% block header-top %}
+     <header class="header--main-page">
+      <nav class="container container--70">
+        <ul class="nav--actions">
+          <li class="btn btn--small btn--without-border"><a href="#">Zaloguj</a></li>
+          <li class="btn btn--small btn--highlighted"><a href="#">Załóż konto</a></li>
+        </ul>
+{% endblock header-top %}
+
+{% block header-bottom %}
     <div class="slogan container container--90">
         <div class="slogan--item">
           <h1>
@@ -13,7 +22,7 @@
           </h1>
         </div>
     </div>
-{% endblock header %}
+{% endblock header-bottom %}
 
 {% block content %}
 
