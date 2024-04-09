@@ -9,11 +9,11 @@ TYPES = {
 
 
 class Category(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=65)
 
 
 class Institution(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=65)
     description = models.TextField()
     type = models.IntegerField(choices=TYPES, default=1)
     categories = models.ManyToManyField(Category)
@@ -25,7 +25,7 @@ class Donation(models.Model):
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     address = models.TextField()
     phone_number = models.IntegerField()
-    city = models.CharField()
+    city = models.CharField(max_length=65)
     zip_code = models.IntegerField()
     pick_up_date = models.DateField()
     pick_up_time = models.TimeField()
