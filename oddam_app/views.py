@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.views import View
 from oddam_app.models import Donation, Institution
@@ -31,6 +32,24 @@ class AddDonationView(View):
 class LoginView(View):
     def get(self, request):
         return render(request, 'login.html')
+
+    def post(self, request):
+        url = request.GET.get('next', 'index')
+        username = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect(url)
+        return render(request, 'register.html', {'error': 'Nie ma takiego użytkownika. '
+                                                          'Zarejestruj się.'})
+
+
+class LogoutView(View):
+
+    def get(self, request):
+        logout(request)
+        return redirect('index')
 
 
 class RegisterView(View):
