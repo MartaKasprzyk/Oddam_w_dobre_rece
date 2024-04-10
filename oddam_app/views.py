@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
-from oddam_app.models import Donation, Institution
+from oddam_app.models import Donation, Institution, Category
 from django.db.models import Sum
 from django.db import IntegrityError
 from django.contrib.auth.models import User
@@ -96,6 +96,7 @@ class LogoutView(View):
 
 class AddDonationView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'form.html')
+        categories = Category.objects.all()
+        return render(request, 'form.html', {'categories': categories})
 
 
