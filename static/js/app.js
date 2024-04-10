@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+      console.log("aaaaaaaaaaaaaaaa");
+
   /**
    * HomePage - Help section
    */
@@ -66,6 +68,28 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log(page);
     }
   }
+
+  /**
+   * header class change upon url change event
+   */
+  const header = document.querySelector("#header");
+  const currentPage = window.location.pathname;
+
+    console.log(header);
+    if (currentPage === "/") {
+      header.className = "";
+      header.classList.add("header--main-page");
+      console.log(header.className);
+    } else if (currentPage === "/add_donation/") {
+      header.className = "";
+      header.classList.add("header--form-page");
+      console.log(header.className);
+    } else {
+      header.className = "";
+      console.log(header.className);
+    }
+
+
   const helpSection = document.querySelector(".help");
   if (helpSection !== null) {
     new Help(helpSection);
