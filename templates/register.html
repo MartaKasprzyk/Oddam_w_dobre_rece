@@ -16,10 +16,11 @@
 {% endblock header-bottom %}
 
 {% block content %}
-
+        
     <section id="register-form" class="login-page">
       <h2>Załóż konto</h2>
-      <form>
+      <form method="post">
+          {% csrf_token %}
         <div class="form-group">
           <input type="text" name="name" placeholder="Imię" />
         </div>
@@ -35,13 +36,14 @@
         <div class="form-group">
           <input type="password" name="password2" placeholder="Powtórz hasło" />
         </div>
-
+        <div class="form-group">{{ error }}</div>  
         <div class="form-group form-group--buttons">
-          <a href="login.html" class="btn btn--without-border">Zaloguj się</a>
+          <a href="{% url 'login' %}#login-form" class="btn btn--without-border">Zaloguj się</a>
           <button class="btn" type="submit">Załóż konto</button>
         </div>
       </form>
     </section>
-    
+
 {% endblock content %}
+
   
