@@ -19,6 +19,44 @@ def test_login_view_get():
     response = client.get(url)
     assert response.status_code == 200
 
+
+@pytest.mark.django_db
+def test_login_view_post_success(user):
+    client = Client()
+    url = reverse('login')
+    data = {
+        'email': user.username,
+        'password': 'Password1@#'
+    }
+    response = client.post(url, data, follow=True)
+    assert response.status_code == 200
+    assert response.context['user'] == user
+
+
+@pytest.mark.django_db
+def test_login_view_post_wrong_password(user):
+    client = Client()
+    url = reverse('login')
+    data = {
+        'email': user.username,
+        'password': '12345'
+    }
+    response = client.post(url, data, follow=True)
+    assert response.status_code == 200
+    assert response.context['error'] == 'Nie ma takiego użytkownika. Zarejestruj się.'
+
+
+@pytest.mark.django_db
+def test_login_view_post_wrong_username(user):
+    client = Client()
+    url = reverse('login')
+    data = {
+        'email': 'wrong_user@mail.com',
+        'password': 'Password1@#'}
+    response = client.post(url, data, follow=True)
+    assert response.status_code == 200
+    assert response.context['error'] == 'Nie ma takiego użytkownika. Zarejestruj się.'
+
 def test_register_view_get():
     url = reverse('register')
     client = Client()
