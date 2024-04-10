@@ -97,3 +97,5 @@ class LogoutView(View):
 class AddDonationView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'form.html')
+
+
