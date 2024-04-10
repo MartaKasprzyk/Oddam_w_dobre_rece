@@ -190,8 +190,18 @@ def test_register_view_post_password_no_special_character():
     assert response.context['error'] == ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
                                          'cyfrę i znak spacjalny. Spróbuj ponownie.')
 
-def test_add_donation_view_get():
-    url = reverse('add_donation')
+
+@pytest.mark.django_db
+def test_add_donation_view_get_success(user):
     client = Client()
+    client.force_login(user)
+    url = reverse('add_donation')
     response = client.get(url)
+    assert response.status_code == 200
+
+
+def test_add_donation_view_get_not_logged():
+    client = Client()
+    url = reverse('add_donation')
+    response = client.get(url, follow=True)
     assert response.status_code == 200
