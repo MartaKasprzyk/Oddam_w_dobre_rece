@@ -57,6 +57,17 @@ def test_login_view_post_wrong_username(user):
     assert response.status_code == 200
     assert response.context['error'] == 'Nie ma takiego użytkownika. Zarejestruj się.'
 
+
+@pytest.mark.django_db
+def test_logout_view_get(user):
+    client = Client()
+    client.force_login(user)
+    url = reverse("logout")
+    response = client.get(url, follow=True)
+    assert response.status_code == 200
+    assert not response.context['user'].is_authenticated
+
+
 def test_register_view_get():
     url = reverse('register')
     client = Client()
