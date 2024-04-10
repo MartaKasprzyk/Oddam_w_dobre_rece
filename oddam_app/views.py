@@ -69,11 +69,11 @@ class RegisterView(View):
                     return redirect("login")
 
                 else:
-                    return render(request, 'register.html', {'error': 'Hasło musi mieć długość '
-                                                                      'min. 8 znaków, zawierać dużą i małą literę,'
-                                                                      'cyfrę i znak spacjalny. '
-                                                                      'Spróbuj ponownie.'})
+                    error = ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
+                             'cyfrę i znak spacjalny. Spróbuj ponownie.')
+
+                    return render(request, 'register.html', {'error': error})
 
         except IntegrityError:
-            return render(request, 'register.html', {'error': 'Konto z podanym adresem'
-                                                              'e-mail już istnieje. Spróbuj ponownie.'})
+            error = 'Konto z podanym adresem e-mail już istnieje. Spróbuj ponownie.'
+            return render(request, 'register.html', {'error': error})

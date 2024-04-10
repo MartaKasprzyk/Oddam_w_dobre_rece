@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import User
 
 from oddam_app.models import Category, Institution, Donation, TYPES
 
@@ -38,5 +39,10 @@ def donations(categories, institutions):
     donations.append(donation2)
     return donations
 
-
+@pytest.fixture
+def user():
+    user = User.objects.create(first_name='Nam1e', last_name='Surname1', username='user@mail.com')
+    user.set_password('Password1@#')
+    user.save()
+    return user
 
