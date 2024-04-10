@@ -1,8 +1,7 @@
 # Oddam w dobre rece
 
-Projekt realizowany w ramach PortfolioLab po kursie Python Developer w CodersLab.
-
-Projekt został przygotowany w oparciu o przedstawione wymagania projektowe.
+Projekt realizowany w ramach PortfolioLab po kursie Python Developer w CodersLab. 
+Front-end został odgórnie dostarczony, moim zadaniem było przygotowanie back-endu w oparciu o przedstawione wymagania projektowe.
 
 **Cel projektu**
 
