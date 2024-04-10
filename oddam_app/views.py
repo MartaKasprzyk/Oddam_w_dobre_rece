@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.views import View
 from oddam_app.models import Donation, Institution
@@ -43,6 +43,13 @@ class LoginView(View):
             return redirect(url)
         return render(request, 'register.html', {'error': 'Nie ma takiego użytkownika. '
                                                           'Zarejestruj się.'})
+
+
+class LogoutView(View):
+
+    def get(self, request):
+        logout(request)
+        return redirect('index')
 
 
 class RegisterView(View):

@@ -15,9 +15,27 @@
   <body>
 
   <!-- //--------------------------- header -------------------------// -->
-    {% block header-top %}{% endblock header-top %}
+  {#    {% block header-top %}{% endblock header-top %}#}
+  <header id="header">
+      <nav class="container container--70">
+          <ul class="nav--actions">
+              {% if user.is_authenticated %}
+                  <li class="logged-user">
+                      Witaj Agata
+                      <ul class="dropdown">
+                          <li><a href="#">Profil</a></li>
+                          <li><a href="#">Ustawienia</a></li>
+                          <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                      </ul>
+                  </li>
+              {% else %}
+                  <li class="btn btn--small btn--without-border"><a href="{% url 'login' %}#login-form">Zaloguj</a></li>
+                  <li class="btn btn--small btn--highlighted"><a href="{% url 'register' %}#register-form">Załóż
+                      konto</a></li>
+              {% endif %}
+          </ul>
 
-        <ul>
+          <ul>
           <li><a href="{% url 'index' %}" class="btn btn--without-border active">Start</a></li>
           <li><a href="{% url 'index' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
           <li><a href="{% url 'index' %}#about-us" class="btn btn--without-border">O nas</a></li>
@@ -25,16 +43,19 @@
           <li>{% block navbar %}{% endblock navbar %}</li> 
           <li><a href="{% url 'index' %}#contact" class="btn btn--without-border">Kontakt</a></li>
         </ul>
-    
-    {% block header-bottom %}{% endblock header-bottom %}
+      </nav>
+
+      {% block header-bottom %}{% endblock header-bottom %}
+  </header>
 <!-- //--------------------------- header end -------------------------// -->   
     
 <!-- //--------------------------- page content -------------------------// -->
 {% block content %}
 {% endblock content %}
 <!-- //--------------------------- page content end ---------------------// -->
-    
-    <footer>
+
+  <!-- //--------------------------- footer -------------------------// -->
+  <footer>
       <div id="contact" class="contact">
         <h2>Skontaktuj się z nami</h2>
         <h3>Formularz kontaktowy</h3>
@@ -55,7 +76,8 @@
         </div>
       </div>
     </footer>
+  <!-- //--------------------------- footer end-------------------------// -->
 
-    <script src="/static/js/app.js"></script>
+  <script src="/static/js/app.js"></script>
   </body>
 </html>
