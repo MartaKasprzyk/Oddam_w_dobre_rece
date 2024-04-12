@@ -192,13 +192,14 @@ def test_register_view_post_password_no_special_character():
 
 
 @pytest.mark.django_db
-def test_add_donation_view_get_success(user, categories):
+def test_add_donation_view_get_success(user, categories, institutions):
     client = Client()
     client.force_login(user)
     url = reverse('add_donation')
     response = client.get(url)
     assert response.status_code == 200
     assert list(response.context['categories']) == categories
+    assert list(response.context['institutions']) == institutions
 
 
 def test_add_donation_view_get_not_logged():
