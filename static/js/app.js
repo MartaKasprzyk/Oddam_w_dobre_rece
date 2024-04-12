@@ -279,11 +279,46 @@ document.addEventListener("DOMContentLoaded", function() {
             if (selectedCategories.every(category => institutionCategories.includes(category))) {
               institution.parentElement.style.display = "flex";
             } else {
-              institution.parentElement.style.display = "none"
+              institution.parentElement.style.display = "none";
             }
           });
         });
       });
+
+      const btnNext = document.querySelector("#go_to_summary");
+      const bags = document.querySelector(".icon-bag");
+      const organization = document.querySelector(".icon-hand");
+      const pick_up_address = document.querySelector("#pick_up_address");
+      const pick_up_details = document.querySelector("#pick_up_details");
+
+      btnNext.addEventListener('click', function(){
+        bags.nextElementSibling.innerText = document.querySelector('[name="bags"]').value;
+
+        institutions.forEach(institution => {
+            if (institution.checked) {
+                const institutionName = institution.closest('.form-group')
+                    .querySelector('.title')
+                    .textContent;
+
+                organization.nextElementSibling.innerText = institutionName;
+                console.log(institutionName);
+            }
+        });
+      });
+
+        // const addressLiAll = pick_up_address.children;
+        //
+        // addressLiAll.forEach(li => {
+        //   li.innerText = ;
+        // })
+        //
+        // const detailsLiAll = pick_up_details.children;
+        //
+        // detailsLiAll.forEach(li => {
+        //   li.innerText = ;
+        // })
+
+      // })
 
 
       // TODO: get data from inputs and show them in summary
