@@ -100,7 +100,7 @@ class AddDonationView(LoginRequiredMixin, View):
         institutions = Institution.objects.all().order_by("name")
         context = {
             'categories': categories,
-            'institutions': institutions
+            'institutions': institutions,
         }
         return render(request, 'form.html', context)
 

@@ -65,6 +65,7 @@
             <div class="form-group form-group--checkbox">
               <label>
                 <input
+                  class="category"
                   type="checkbox"
                   name="categories"
                   value="{{ category.id }}"
@@ -100,13 +101,15 @@
 
 
           <!-- STEP 3 -->
+        {%  load get_category_ids %}
           <div data-step="3">
             <h3>Wybierz organizacje, której chcesz pomóc:</h3>
             
-            {% for institution in institutions %}   
+            {% for institution in institutions %}
             <div class="form-group form-group--checkbox">
               <label>
-                <input type="radio" name="organization" value="{{ institution.id }}" />
+                <input class="institution" type="radio" name="organization"
+                       data-categories="{{ institution|category_ids }}" value="{{ institution.id }}" />
                 <span class="checkbox radio"></span>
                 <span class="description">
                   <div class="title">{{ institution.name }}</div>

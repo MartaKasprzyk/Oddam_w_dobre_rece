@@ -247,6 +247,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // TODO: Validation
 
+
       this.slides.forEach(slide => {
         slide.classList.remove("active");
 
@@ -257,6 +258,33 @@ document.addEventListener("DOMContentLoaded", function() {
 
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
+
+
+      const categoryCheckboxes = document.querySelectorAll('.category');
+      const institutions = document.querySelectorAll('.institution');
+      console.log(categoryCheckboxes);
+      console.log(institutions);
+
+      categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+          const selectedCategories = Array.from(categoryCheckboxes)
+              .filter(checkbox => checkbox.checked)
+              .map(checkbox => checkbox.value);
+          console.log(selectedCategories);
+
+          institutions.forEach(institution => {
+            const institutionCategories = institution.dataset.categories;
+            console.log(institutionCategories);
+
+            if (selectedCategories.every(category => institutionCategories.includes(category))) {
+              institution.parentElement.style.display = "flex";
+            } else {
+              institution.parentElement.style.display = "none"
+            }
+          });
+        });
+      });
+
 
       // TODO: get data from inputs and show them in summary
     }
