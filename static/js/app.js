@@ -291,6 +291,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const pick_up_address = document.querySelector("#pick_up_address");
       const pick_up_details = document.querySelector("#pick_up_details");
 
+
       btnNext.addEventListener('click', function(){
         bags.nextElementSibling.innerText = document.querySelector('[name="bags"]').value;
 
@@ -304,21 +305,48 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.log(institutionName);
             }
         });
+
+        const address = document.querySelector('[name="address"]').value;
+        const city = document.querySelector('[name="city"]').value;
+        const postcode = document.querySelector('[name="postcode"]').value;
+        const phone = document.querySelector('[name="phone"]').value;
+        console.log(address, city, postcode, phone);
+
+        const addressData = [];
+        addressData.push(address, city, postcode, phone);
+        console.log(addressData)
+
+        const addressLiAll = Array.from(pick_up_address.children);
+        console.log(addressLiAll);
+
+        addressLiAll.forEach((li, index) => {
+          li.innerText = addressData[index];
+        });
+
+        const data = document.querySelector('[name="data"]').value;
+
+        const dateObj = new Date(data);
+        const day = dateObj.getDate();
+        const month = dateObj.getMonth() + 1;
+        const year = dateObj.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`
+
+        const time = document.querySelector('[name="time"]').value;
+        const more_info = document.querySelector('[name="more_info"]').value;
+        console.log(data,formattedDate, time, more_info);
+
+        const detailsData = [];
+        detailsData.push(formattedDate, time, more_info);
+        console.log(detailsData)
+
+        const detailsLiAll = Array.from(pick_up_details.children);
+        console.log(detailsLiAll);
+
+        detailsLiAll.forEach((li, index) => {
+          li.innerText = detailsData[index];
+        });
+
       });
-
-        // const addressLiAll = pick_up_address.children;
-        //
-        // addressLiAll.forEach(li => {
-        //   li.innerText = ;
-        // })
-        //
-        // const detailsLiAll = pick_up_details.children;
-        //
-        // detailsLiAll.forEach(li => {
-        //   li.innerText = ;
-        // })
-
-      // })
 
 
       // TODO: get data from inputs and show them in summary
