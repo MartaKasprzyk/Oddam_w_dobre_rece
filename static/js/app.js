@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-      console.log("aaaaaaaaaaaaaaaa");
 
   /**
    * HomePage - Help section
@@ -75,18 +74,14 @@ document.addEventListener("DOMContentLoaded", function() {
   const header = document.querySelector("#header");
   const currentPage = window.location.pathname;
 
-    console.log(header);
     if (currentPage === "/") {
       header.className = "";
       header.classList.add("header--main-page");
-      console.log(header.className);
-    } else if (currentPage === "/add_donation/") {
+    } else if (currentPage === "/add_donation/" || currentPage === "/confirmation/") {
       header.className = "";
       header.classList.add("header--form-page");
-      console.log(header.className);
     } else {
       header.className = "";
-      console.log(header.className);
     }
 
 
@@ -262,19 +257,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
       const categoryCheckboxes = document.querySelectorAll('.category');
       const institutions = document.querySelectorAll('.institution');
-      console.log(categoryCheckboxes);
-      console.log(institutions);
 
       categoryCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
           const selectedCategories = Array.from(categoryCheckboxes)
               .filter(checkbox => checkbox.checked)
               .map(checkbox => checkbox.value);
-          console.log(selectedCategories);
 
           institutions.forEach(institution => {
             const institutionCategories = institution.dataset.categories;
-            console.log(institutionCategories);
 
             if (selectedCategories.every(category => institutionCategories.includes(category))) {
               institution.parentElement.style.display = "flex";
@@ -302,7 +293,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     .textContent;
 
                 organization.nextElementSibling.innerText = institutionName;
-                console.log(institutionName);
             }
         });
 
@@ -310,14 +300,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const city = document.querySelector('[name="city"]').value;
         const postcode = document.querySelector('[name="postcode"]').value;
         const phone = document.querySelector('[name="phone"]').value;
-        console.log(address, city, postcode, phone);
 
         const addressData = [];
         addressData.push(address, city, postcode, phone);
-        console.log(addressData)
 
         const addressLiAll = Array.from(pick_up_address.children);
-        console.log(addressLiAll);
 
         addressLiAll.forEach((li, index) => {
           li.innerText = addressData[index];
@@ -333,23 +320,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const time = document.querySelector('[name="time"]').value;
         const more_info = document.querySelector('[name="more_info"]').value;
-        console.log(data,formattedDate, time, more_info);
 
         const detailsData = [];
         detailsData.push(formattedDate, time, more_info);
-        console.log(detailsData)
 
         const detailsLiAll = Array.from(pick_up_details.children);
-        console.log(detailsLiAll);
 
         detailsLiAll.forEach((li, index) => {
           li.innerText = detailsData[index];
         });
-
       });
-
-
-      // TODO: get data from inputs and show them in summary
     }
 
     /**
@@ -361,6 +341,49 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault();
       this.currentStep++;
       this.updateForm();
+
+      const getForm = document.getElementById('donation_add');
+      const formData = new FormData(getForm);
+      console.log(...formData)
+
+      //fetchinf csrf cookie
+
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, "csrftoken".length + 1) === ("csrftoken=")) {
+            cookieValue = decodeURIComponent(cookie.substring("csrftoken".length + 1));
+            break;
+          }
+        }
+      }
+
+      fetch('http://localhost:8000/confirmation/', {
+        headers: {
+          "X-CSRFToken": cookieValue
+        },
+        method: 'POST',
+        body: formData,
+        credentials: "same-origin"
+
+      })
+
+
+      // getForm.addEventListener ('submit', function(e){
+      // const formData = new FormData(getForm);
+      // console.log(formData);
+      //     fetch('http://localhost:8000/add_donation/', {
+      //     method: 'POST',
+      //     body: JSON.stringify(formData)
+      //     })
+      //     .then(response => response.json())
+      //     .then(data => console.log("fromData as quantity" + data))
+      //     .catch(error => console.error('Error:', error));
+      //     });
+
     }
   }
   const form = document.querySelector(".form--steps");
