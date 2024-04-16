@@ -1,13 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
 from django.views import View
 from oddam_app.models import Donation, Institution, Category
 from django.db.models import Sum
 from django.db import IntegrityError
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
+import datetime
+import time
 
 
 class LandingPageView(View):
@@ -109,6 +110,51 @@ class AddDonationView(LoginRequiredMixin, View):
 
 
 class ConfirmationView(LoginRequiredMixin, View):
+    def validate_postcode(self, request, zip_code):
+      return len(zip_code) == 6 and zip_code[:1].isnumeric() and zip_code[2] == "-" and zip_code[3:].isnumeric()
+
+    def validate_form(self, request, form_data):
+
+        categories_ids = form_data.getlist('categories')
+        categories_ids_num = [int(i) for i in categories_ids]
+        categories = Category.objects.filter(pk__in=categories_ids_num)
+
+        quantity = int(form_data['bags'])
+
+        institution_id = form_data.get('organization')
+        institution = Institution.objects.get(pk=institution_id)
+
+        address = form_data['address']
+        address = address.replace(" ", "")
+
+        city = form_data['city']
+        city = city.replace(" ", "")
+
+        zip_code = form_data['postcode']
+        validated_zip_code = self.validate_postcode(request, zip_code)
+
+        phone_number = form_data['phone']
+
+        pick_up_date = form_data['data']
+        pick_up_date = datetime.date.fromisoformat(pick_up_date)
+
+        pick_up_time = form_data['time']
+        current_time = time.strftime("%H:%M", time.localtime())
+
+        if len(categories) > 0:
+            if quantity is not None and quantity > 0:
+                if institution is not None:
+                    if any(x for x in address if x.isalpha()) and any(x for x in address if x.isdigit()):
+                        if city.isalpha():
+                            if validated_zip_code:
+                                if phone_number.isdigit():
+                                    # date & time validation tbd
+                                    if pick_up_date > datetime.date.today():
+                                        if pick_up_time > current_time:
+                                            return True
+        else:
+            return False
+
     def get(self, request):
         return render(request, 'form-confirmation.html')
 
@@ -121,10 +167,9 @@ class ConfirmationView(LoginRequiredMixin, View):
         categories_ids_num = [int(i) for i in categories_ids]
         categories = Category.objects.filter(pk__in=categories_ids_num)
 
-        # validate form
-        validated = True
+        validated = self.validate_form(request, form_data)
 
-        if validated is True:
+        if validated:
             donation = Donation.objects.create(quantity=form_data['bags'], institution=institution,
                                                address=form_data['address'], phone_number=form_data['phone'],
                                                city=form_data['city'], zip_code=form_data['postcode'],
