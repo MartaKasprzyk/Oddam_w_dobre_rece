@@ -1,12 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from oddam_app.models import Donation, Institution, Category
 from django.db.models import Sum
 from django.db import IntegrityError
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 
 
 class LandingPageView(View):
@@ -96,9 +97,6 @@ class LogoutView(View):
 
 
 class AddDonationView(LoginRequiredMixin, View):
-    # def validate_form(self, request, template):
-    #
-    #     return True
 
     def get(self, request):
         categories = Category.objects.all()
@@ -123,6 +121,7 @@ class ConfirmationView(LoginRequiredMixin, View):
         categories_ids_num = [int(i) for i in categories_ids]
         categories = Category.objects.filter(pk__in=categories_ids_num)
 
+        # validate form
         validated = True
 
         if validated is True:
@@ -133,8 +132,6 @@ class ConfirmationView(LoginRequiredMixin, View):
                                                pick_up_comment=form_data['more_info'], user=user)
             donation.categories.set(categories)
             donation.save()
-            return JsonResponse({'message': 'Data saved successfully'})
+            return redirect('confirmation')
 
-        # validate form and save to DB
-
-        return render(request, 'form-confirmation.html')
+        return render(request, 'form.html')

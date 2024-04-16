@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function() {
         body: formData,
         credentials: "same-origin"
       })
-
+      window.location.href = "http://localhost:8000/confirmation/"
 
       // getForm.addEventListener ('submit', function(e){
       // const formData = new FormData(getForm);
