@@ -346,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const formData = new FormData(getForm);
       console.log(...formData)
 
-      //fetchinf csrf cookie
+      //fetching csrf cookie
 
       let cookieValue = null;
       if (document.cookie && document.cookie !== '') {
@@ -368,7 +368,6 @@ document.addEventListener("DOMContentLoaded", function() {
         method: 'POST',
         body: formData,
         credentials: "same-origin"
-
       })
 
 

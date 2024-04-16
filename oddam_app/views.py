@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from oddam_app.models import Donation, Institution, Category
@@ -110,47 +109,31 @@ class AddDonationView(LoginRequiredMixin, View):
         }
         return render(request, 'form.html', context)
 
-    # def post(self, request):
-    #     categories = Category.objects.all()
-    #     institutions = Institution.objects.all().order_by("name")
-    #     context = {
-    #         'categories': categories,
-    #         'institutions': institutions,
-    #     }
-    #
-    #     user = request.user
-    #     categories = request.POST.getlist('categories')
-    #     quantity = request.POST.get('bags')
-    #     institution = request.POST.get('organization')
-    #     address = request.POST.get('address')
-    #     phone_number = request.POST.get('phone')
-    #     city = request.POST.get('city')
-    #     zip_code = request.POST.get('postcode')
-    #     pick_up_date = request.POST.get('date')
-    #     pick_up_time = request.POST.get('time')
-    #     pick_up_comment = request.POST.get('more_info')
-    #
-    #     # validated = self.validate_form(request, 'form.html')
-    #     validated = True
-    #
-    #     if validated is True: #and validated is not HttpResponse:
-    #
-    #         donation = Donation.objects.create(quantity=quantity, institution=institution, address=address,
-    #                                            phone_number=phone_number, city=city, zip_code=zip_code,
-    #                                            pick_up_date=pick_up_date, pick_up_time=pick_up_time,
-    #                                            pick_up_comment=pick_up_comment, user=user)
-    #         donation.categories.set(categories)
-    #         return redirect('confirmation')
-    #
-    #     return render(request, 'form.html', context)
-
 
 class ConfirmationView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'form-confirmation.html')
 
     def post(self, request):
-        print(request.POST)
+        user = request.user
+        form_data = request.POST
+        institution_id = form_data.get('organization')
+        institution = Institution.objects.get(pk=institution_id)
+        categories_ids = form_data.getlist('categories')
+        categories_ids_num = [int(i) for i in categories_ids]
+        categories = Category.objects.filter(pk__in=categories_ids_num)
+
+        validated = True
+
+        if validated is True:
+            donation = Donation.objects.create(quantity=form_data['bags'], institution=institution,
+                                               address=form_data['address'], phone_number=form_data['phone'],
+                                               city=form_data['city'], zip_code=form_data['postcode'],
+                                               pick_up_date=form_data['data'], pick_up_time=form_data['time'],
+                                               pick_up_comment=form_data['more_info'], user=user)
+            donation.categories.set(categories)
+            donation.save()
+            return JsonResponse({'message': 'Data saved successfully'})
 
         # validate form and save to DB
 
