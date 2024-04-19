@@ -252,15 +252,15 @@ document.addEventListener("DOMContentLoaded", function() {
     validateForm() {
       const formInputs = this.getFormInputs();
 
-      // get next-step buttons
+      // get next-step buttons (MK)
       const btnNextStep = document.querySelectorAll('.btn.next-step');
 
-      // disable all next-step buttons
+      // disable all next-step buttons (MK)
       btnNextStep.forEach(button => {
         button.disabled = true;
       });
 
-      // validate if category checkbox is checked
+      // validate if category checkbox is checked (MK)
       formInputs.categoryCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
           const anyCheckboxChecked = Array.from(formInputs.categoryCheckboxes).some(checkbox => checkbox.checked);
@@ -268,14 +268,14 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       });
 
-      // validate bags input
+      // validate bags input (MK)
       formInputs.bagsInput.addEventListener('input', function () {
         if (formInputs.bagsInput.value.trim() !== '' && parseInt(formInputs.bagsInput.value.trim()) > 0) {
           btnNextStep[1].disabled = false;
         }
       })
 
-      // validate if institution is chosen
+      // validate if institution is chosen (MK)
       formInputs.institutions.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
           if (checkbox.checked) {
@@ -284,13 +284,18 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       });
 
-      // validate pick up info
+      // validate pick up info (MK)
       const pickUpInfo = [];
       pickUpInfo.push(formInputs.address, formInputs.city, formInputs.postcode,
           formInputs.phone, formInputs.date, formInputs.time)
 
       const postCodePattern = /^\d{2}-\d{3}$/;
       const alphanumericAddress = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
+
+    // enable possible pick up date starting from tomorrow (MK)
+      let today = new Date();
+          today = new Date(today.setDate(today.getDate() + 1)).toISOString().split('T')[0];
+      formInputs.date.min = today;
 
       pickUpInfo.forEach(element => {
         element.addEventListener('input', function () {
@@ -302,6 +307,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const isPhoneValid = formInputs.phone.value.trim().length === 9 &&
                 parseInt(formInputs.phone.value.trim()) > 0;
             const isDateTimeValid = formInputs.date.value && formInputs.time.value;
+
 
             if (isAddressValid && isCityValid && isPostcodeValid && isPhoneValid && isDateTimeValid) {
               btnNextStep[3].disabled = false;
