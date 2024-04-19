@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // form validation (MK)
     validateForm() {
-       const formInputs = this.getFormInputs();
+      const formInputs = this.getFormInputs();
 
       // get next-step buttons
       const btnNextStep = document.querySelectorAll('.btn.next-step');
@@ -263,7 +263,8 @@ document.addEventListener("DOMContentLoaded", function() {
       // validate if category checkbox is checked
       formInputs.categoryCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
-            btnNextStep[0].disabled = false;
+          const anyCheckboxChecked = Array.from(formInputs.categoryCheckboxes).some(checkbox => checkbox.checked);
+          btnNextStep[0].disabled = !anyCheckboxChecked;
         });
       });
 
@@ -331,17 +332,17 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
-      // changing institutions display based on chosen categories (MK)
-      const categoryCheckboxes = document.querySelectorAll('.category');
-      const institutions = document.querySelectorAll('.institution');
+      // getting form inputs (MK)
+      const formInputs = this.getFormInputs();
 
-      categoryCheckboxes.forEach(checkbox => {
+      // changing institutions display based on chosen categories (MK)
+      formInputs.categoryCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
-          const selectedCategories = Array.from(categoryCheckboxes)
+          const selectedCategories = Array.from(formInputs.categoryCheckboxes)
               .filter(checkbox => checkbox.checked)
               .map(checkbox => checkbox.value);
 
-          institutions.forEach(institution => {
+          formInputs.institutions.forEach(institution => {
             const institutionCategories = institution.dataset.categories;
 
             if (selectedCategories.every(category => institutionCategories.includes(category))) {
@@ -353,8 +354,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       });
 
-      // getting form inputs data and displaying in the summary (MK)
-
       // summary fields (MK)
       const btnNext = document.querySelector("#go_to_summary");
       const bags = document.querySelector(".icon-bag");
@@ -365,56 +364,43 @@ document.addEventListener("DOMContentLoaded", function() {
       // changing summary fields inner text for input values (MK)
       btnNext.addEventListener('click', function(){
 
-        // bags field validation (MK)
-        const bagsInput = document.querySelector('[name="bags"]').value;
-        if (bagsInput === '') {
-          console.log('Podaj ilość worków');
-        } else {
-          bags.nextElementSibling.innerText = bagsInput;
-        }
+        // bags  summary (MK)
+          bags.nextElementSibling.innerText = formInputs.bagsInput.value;
 
-        // institution checkbox validation (MK)
-        institutions.forEach(institution => {
+        // institution summary (MK)
+        formInputs.institutions.forEach(institution => {
             if (institution.checked) {
-                const institutionName = institution.closest('.form-group')
-                    .querySelector('.title')
-                    .textContent;
+              const institutionName = institution.closest('.form-group')
+                  .querySelector('.title')
+                  .textContent;
 
-                organization.nextElementSibling.innerText = institutionName;
-            } else {
-              console.log("Wybierz organizację, której chcesz przekazać rzeczy.");
+              organization.nextElementSibling.innerText = institutionName;
             }
         });
 
-        // pick up address data (MK)
-        const address = document.querySelector('[name="address"]').value;
-        const city = document.querySelector('[name="city"]').value;
-        const postcode = document.querySelector('[name="postcode"]').value;
-        const phone = document.querySelector('[name="phone"]').value;
-
+        // pick up address summary (MK)
         const addressData = [];
-        addressData.push(address, city, postcode, phone);
+        addressData.push(formInputs.address, formInputs.city, formInputs.postcode, formInputs.phone);
 
         const addressLiAll = Array.from(pick_up_address.children);
 
         addressLiAll.forEach((li, index) => {
-          li.innerText = addressData[index];
+          li.innerText = addressData[index].value;
         });
 
-        // pick up time and comment data (MK)
-        const data = document.querySelector('[name="data"]').value;
+        // pick up details summary (MK)
+
         // formatting date display (MK)
-        const dateObj = new Date(data);
+        const dateObj = new Date(formInputs.date.value);
         const day = dateObj.getDate();
         const month = dateObj.getMonth() + 1;
         const year = dateObj.getFullYear();
         const formattedDate = `${day}/${month}/${year}`
 
-        const time = document.querySelector('[name="time"]').value;
-        const more_info = document.querySelector('[name="more_info"]').value;
+        const more_info = document.querySelector('[name="more_info"]');
 
         const detailsData = [];
-        detailsData.push(formattedDate, time, more_info);
+        detailsData.push(formattedDate, formInputs.time.value, more_info.value);
 
         const detailsLiAll = Array.from(pick_up_details.children);
 
