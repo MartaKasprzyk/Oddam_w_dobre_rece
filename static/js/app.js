@@ -365,7 +365,20 @@ document.addEventListener("DOMContentLoaded", function() {
       btnNext.addEventListener('click', function(){
 
         // bags  summary (MK)
-          bags.nextElementSibling.innerText = formInputs.bagsInput.value;
+        let bagsInputValue = parseInt(formInputs.bagsInput.value);
+        switch (bagsInputValue) {
+                case 1:
+                    bags.nextElementSibling.innerText = bagsInputValue + " worek";
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                    bags.nextElementSibling.innerText = bagsInputValue + " worki";
+                    break;
+                default:
+                    bags.nextElementSibling.innerText = bagsInputValue + " worków";
+                    break;
+            }
 
         // institution summary (MK)
         formInputs.institutions.forEach(institution => {
@@ -400,7 +413,15 @@ document.addEventListener("DOMContentLoaded", function() {
         const more_info = document.querySelector('[name="more_info"]');
 
         const detailsData = [];
-        detailsData.push(formattedDate, formInputs.time.value, more_info.value);
+        detailsData.push(formattedDate, formInputs.time.value);
+
+         if (more_info.value.trim() === ''){
+          const autoComment = "Brak uwag";
+          detailsData.push(autoComment)
+        } else {
+          detailsData.push(more_info.value);
+        }
+
 
         const detailsLiAll = Array.from(pick_up_details.children);
 
