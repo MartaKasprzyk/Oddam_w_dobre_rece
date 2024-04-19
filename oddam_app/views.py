@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import datetime
-from django.utils import timezone
+import time
 
 
 class LandingPageView(View):
@@ -134,12 +134,11 @@ class ConfirmationView(LoginRequiredMixin, View):
         validated_zip_code = self.validate_postcode(request, zip_code)
 
         phone_number = form_data['phone']
-        pick_up_date = form_data['data']
-        pick_up_time = form_data['time']
 
-        pick_up_datetime = datetime.datetime.combine(datetime.datetime.strptime(pick_up_date, '%Y-%m-%d').date(),
-                                                     datetime.datetime.strptime(pick_up_time, '%H:%M').time())
-        current_datetime = timezone.now()
+        pick_up_date = form_data['data']
+        pick_up_date = datetime.date.fromisoformat(pick_up_date)
+
+        pick_up_time = form_data['time']
 
         if len(categories) > 0:
             if quantity is not None and quantity > 0:
@@ -148,8 +147,9 @@ class ConfirmationView(LoginRequiredMixin, View):
                         if city.isalpha():
                             if validated_zip_code:
                                 if phone_number.isdigit():
-                                    if pick_up_datetime > current_datetime:
-                                        return True
+                                    if pick_up_date > datetime.date.today():
+                                        if pick_up_time:
+                                            return True
         else:
             return False
 
