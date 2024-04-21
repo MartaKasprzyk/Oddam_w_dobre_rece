@@ -79,6 +79,7 @@ def test_register_view_get():
     response = client.get(url)
     assert response.status_code == 200
 
+
 @pytest.mark.django_db
 def test_register_view_post_passwords_different():
     client = Client()
@@ -213,6 +214,7 @@ def test_add_donation_view_get_not_logged():
     response = client.get(url, follow=True)
     assert response.status_code == 200
 
+
 @pytest.mark.django_db
 def test_confirmation_view_post_success(user, categories, institutions):
     client = Client()
@@ -245,3 +247,8 @@ def test_confirmation_view_post_success(user, categories, institutions):
                                 pick_up_comment='comment',
                                 user=user
                                 )
+
+
+def test_an_admin_view(admin_client):
+    response = admin_client.get('/admin/')
+    assert response.status_code == 200
