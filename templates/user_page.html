@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <section class="help">
+    <section>
       <h2>Twoje dane</h2>
-        <div class="user-page">Imię: {{ user.first_name }}</div>
-        <div class="user-page">Nazwisko: {{ user.last_name }}</div>
-        <div class="user-page">E-mail: {{ user.username }}</div>
+        <div class="user-page"><b>Imię: </b> {{ user.first_name }}</div><br>
+        <div class="user-page"><b>Nazwisko: </b> {{ user.last_name }}</div><br>
+        <div class="user-page"><b>E-mail: </b> {{ user.username }}</div><br>
     </section>
 {% endblock content %}
