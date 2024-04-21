@@ -14,10 +14,12 @@ def categories():
     return categories
 
 @pytest.fixture
-def institutions():
+def institutions(categories):
     institutions = []
-    institution1 = Institution.objects.create(name="institution1")
-    institution2 = Institution.objects.create(name="institution2")
+    institution1 = Institution.objects.create(name="institution1", description='description1', type=1)
+    institution2 = Institution.objects.create(name="institution2", description='description2', type=2)
+    institution1.categories.set(categories)
+    institution2.categories.set(categories)
     institutions.append(institution1)
     institutions.append(institution2)
     return institutions

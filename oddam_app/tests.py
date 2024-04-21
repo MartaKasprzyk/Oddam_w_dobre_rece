@@ -1,7 +1,12 @@
+import datetime
+
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
+
+from oddam_app.models import Donation, Category, Institution
+
 
 @pytest.mark.django_db
 def test_landing_page_view_get(donations):
@@ -190,8 +195,53 @@ def test_register_view_post_password_no_special_character():
     assert response.context['error'] == ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
                                          'cyfrę i znak spacjalny. Spróbuj ponownie.')
 
-def test_add_donation_view_get():
-    url = reverse('add_donation')
+
+@pytest.mark.django_db
+def test_add_donation_view_get_success(user, categories, institutions):
     client = Client()
+    client.force_login(user)
+    url = reverse('add_donation')
     response = client.get(url)
     assert response.status_code == 200
+    assert list(response.context['categories']) == categories
+    assert list(response.context['institutions']) == institutions
+
+
+def test_add_donation_view_get_not_logged():
+    client = Client()
+    url = reverse('add_donation')
+    response = client.get(url, follow=True)
+    assert response.status_code == 200
+
+@pytest.mark.django_db
+def test_confirmation_view_post_success(user, categories, institutions):
+    client = Client()
+    client.force_login(user)
+    url = reverse('confirmation')
+    data = {
+        'categories': [categories[0].pk],
+        'bags': 1,
+        'organization': institutions[0].pk,
+        'address': 'Ulica 12',
+        'phone': 123456789,
+        'city': 'City',
+        'postcode': '00-111',
+        'data': "2024-05-23",
+        'time': '10:00:00',
+        'more_info': 'comment',
+        'user': user,
+    }
+    response = client.post(url, data, follow=True)
+    assert response.status_code == 200
+    assert Donation.objects.get(categories=categories[0],
+                                quantity=1,
+                                institution=institutions[0],
+                                address='Ulica 12',
+                                phone_number=123456789,
+                                city='City',
+                                zip_code='00-111',
+                                pick_up_date="2024-05-23",
+                                pick_up_time="10:00:00",
+                                pick_up_comment='comment',
+                                user=user
+                                )

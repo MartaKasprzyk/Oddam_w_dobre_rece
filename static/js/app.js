@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
+
   /**
    * HomePage - Help section
    */
@@ -66,6 +67,24 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log(page);
     }
   }
+
+  /**
+   * header class change upon url change event (MK)
+   */
+  const header = document.querySelector("#header");
+  const currentPage = window.location.pathname;
+
+    if (currentPage === "/") {
+      header.className = "";
+      header.classList.add("header--main-page");
+    } else if (currentPage === "/add_donation/" || currentPage === "/confirmation/") {
+      header.className = "";
+      header.classList.add("header--form-page");
+    } else {
+      header.className = "";
+    }
+
+
   const helpSection = document.querySelector(".help");
   if (helpSection !== null) {
     new Help(helpSection);
@@ -214,6 +233,90 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$form.querySelector("form").addEventListener("submit", e => this.submit(e));
     }
 
+    // get form input fields (MK)
+    getFormInputs() {
+      const categoryCheckboxes = document.querySelectorAll('.category');
+      const bagsInput = document.querySelector('[name="bags"]');
+      const institutions = document.querySelectorAll('.institution');
+      const address = document.querySelector('[name="address"]');
+      const city = document.querySelector('[name="city"]');
+      const postcode = document.querySelector('[name="postcode"]');
+      const phone = document.querySelector('[name="phone"]');
+      const date = document.querySelector('[name="data"]');
+      const time = document.querySelector('[name="time"]');
+
+      return {categoryCheckboxes, bagsInput, institutions, address, city, postcode, phone, date, time};
+    }
+
+    // form validation (MK)
+    validateForm() {
+      const formInputs = this.getFormInputs();
+
+      // get next-step buttons (MK)
+      const btnNextStep = document.querySelectorAll('.btn.next-step');
+
+      // disable all next-step buttons (MK)
+      btnNextStep.forEach(button => {
+        button.disabled = true;
+      });
+
+      // validate if category checkbox is checked (MK)
+      formInputs.categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+          const anyCheckboxChecked = Array.from(formInputs.categoryCheckboxes).some(checkbox => checkbox.checked);
+          btnNextStep[0].disabled = !anyCheckboxChecked;
+        });
+      });
+
+      // validate bags input (MK)
+      formInputs.bagsInput.addEventListener('input', function () {
+        if (formInputs.bagsInput.value.trim() !== '' && parseInt(formInputs.bagsInput.value.trim()) > 0) {
+          btnNextStep[1].disabled = false;
+        }
+      })
+
+      // validate if institution is chosen (MK)
+      formInputs.institutions.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+          if (checkbox.checked) {
+            btnNextStep[2].disabled = false;
+          }
+        });
+      });
+
+      // validate pick up info (MK)
+      const pickUpInfo = [];
+      pickUpInfo.push(formInputs.address, formInputs.city, formInputs.postcode,
+          formInputs.phone, formInputs.date, formInputs.time)
+
+      const postCodePattern = /^\d{2}-\d{3}$/;
+      const alphanumericAddress = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
+
+    // enable possible pick up date starting from tomorrow (MK)
+      let today = new Date();
+          today = new Date(today.setDate(today.getDate() + 1)).toISOString().split('T')[0];
+      formInputs.date.min = today;
+
+      pickUpInfo.forEach(element => {
+        element.addEventListener('input', function () {
+            const isAddressValid = formInputs.address.value.trim() !== '' &&
+                alphanumericAddress.test(formInputs.address.value.trim());
+            const isCityValid = formInputs.city.value.trim() !== '';
+            const isPostcodeValid = formInputs.postcode.value.trim() !== '' &&
+                postCodePattern.test(formInputs.postcode.value.trim());
+            const isPhoneValid = formInputs.phone.value.trim().length === 9 &&
+                parseInt(formInputs.phone.value.trim()) > 0;
+            const isDateTimeValid = formInputs.date.value && formInputs.time.value;
+
+
+            if (isAddressValid && isCityValid && isPostcodeValid && isPhoneValid && isDateTimeValid) {
+              btnNextStep[3].disabled = false;
+            }
+        })
+      });
+
+
+    }
     /**
      * Update form front-end
      * Show next or previous section etc.
@@ -222,6 +325,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.innerText = this.currentStep;
 
       // TODO: Validation
+      this.validateForm();
 
       this.slides.forEach(slide => {
         slide.classList.remove("active");
@@ -234,7 +338,103 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
-      // TODO: get data from inputs and show them in summary
+      // getting form inputs (MK)
+      const formInputs = this.getFormInputs();
+
+      // changing institutions display based on chosen categories (MK)
+      formInputs.categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+          const selectedCategories = Array.from(formInputs.categoryCheckboxes)
+              .filter(checkbox => checkbox.checked)
+              .map(checkbox => checkbox.value);
+
+          formInputs.institutions.forEach(institution => {
+            const institutionCategories = institution.dataset.categories;
+
+            if (selectedCategories.every(category => institutionCategories.includes(category))) {
+              institution.parentElement.style.display = "flex";
+            } else {
+              institution.parentElement.style.display = "none";
+            }
+          });
+        });
+      });
+
+      // summary fields (MK)
+      const btnNext = document.querySelector("#go_to_summary");
+      const bags = document.querySelector(".icon-bag");
+      const organization = document.querySelector(".icon-hand");
+      const pick_up_address = document.querySelector("#pick_up_address");
+      const pick_up_details = document.querySelector("#pick_up_details");
+
+      // changing summary fields inner text for input values (MK)
+      btnNext.addEventListener('click', function(){
+
+        // bags  summary (MK)
+        let bagsInputValue = parseInt(formInputs.bagsInput.value);
+        switch (bagsInputValue) {
+                case 1:
+                    bags.nextElementSibling.innerText = bagsInputValue + " worek";
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                    bags.nextElementSibling.innerText = bagsInputValue + " worki";
+                    break;
+                default:
+                    bags.nextElementSibling.innerText = bagsInputValue + " worków";
+                    break;
+            }
+
+        // institution summary (MK)
+        formInputs.institutions.forEach(institution => {
+            if (institution.checked) {
+              const institutionName = institution.closest('.form-group')
+                  .querySelector('.title')
+                  .textContent;
+
+              organization.nextElementSibling.innerText = institutionName;
+            }
+        });
+
+        // pick up address summary (MK)
+        const addressData = [];
+        addressData.push(formInputs.address, formInputs.city, formInputs.postcode, formInputs.phone);
+
+        const addressLiAll = Array.from(pick_up_address.children);
+
+        addressLiAll.forEach((li, index) => {
+          li.innerText = addressData[index].value;
+        });
+
+        // pick up details summary (MK)
+
+        // formatting date display (MK)
+        const dateObj = new Date(formInputs.date.value);
+        const day = dateObj.getDate();
+        const month = dateObj.getMonth() + 1;
+        const year = dateObj.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`
+
+        const more_info = document.querySelector('[name="more_info"]');
+
+        const detailsData = [];
+        detailsData.push(formattedDate, formInputs.time.value);
+
+         if (more_info.value.trim() === ''){
+          const autoComment = "Brak uwag";
+          detailsData.push(autoComment)
+        } else {
+          detailsData.push(more_info.value);
+        }
+
+
+        const detailsLiAll = Array.from(pick_up_details.children);
+
+        detailsLiAll.forEach((li, index) => {
+          li.innerText = detailsData[index];
+        });
+      });
     }
 
     /**
@@ -246,6 +446,47 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault();
       this.currentStep++;
       this.updateForm();
+
+      // getting form data (MK)
+
+      const getForm = document.getElementById('donation_add');
+      const formData = new FormData(getForm);
+      console.log(...formData)
+
+      //fetching csrf cookie (MK)
+
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, "csrftoken".length + 1) === ("csrftoken=")) {
+            cookieValue = decodeURIComponent(cookie.substring("csrftoken".length + 1));
+            break;
+          }
+        }
+      }
+
+      // sending form data to server (MK)
+
+      fetch('http://localhost:8000/confirmation/', {
+        headers: {
+          "X-CSRFToken": cookieValue
+        },
+        method: 'POST',
+        body: formData,
+        credentials: "same-origin"
+      })
+
+      //     .then(response => response.json())
+      //     .then(data => console.log("fromData as quantity" + data))
+      //     .catch(error => console.error('Error:', error));
+      //     });
+
+      // redirect after form submission (MK)
+      window.location.href = "http://localhost:8000/confirmation/"
+
     }
   }
   const form = document.querySelector(".form--steps");
