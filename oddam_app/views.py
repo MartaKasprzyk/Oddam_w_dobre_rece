@@ -101,7 +101,8 @@ class UserPageView(LoginRequiredMixin, View):
 
     def get(self, request):
         user = request.user
-        return render(request, 'user_page.html', {'user': user})
+        donations = Donation.objects.filter(user=user)
+        return render(request, 'user_page.html', {'user': user, 'donations': donations})
 
 
 class AddDonationView(LoginRequiredMixin, View):
