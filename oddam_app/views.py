@@ -97,6 +97,13 @@ class LogoutView(View):
         return redirect('index')
 
 
+class UserPageView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        user = request.user
+        return render(request, 'user_page.html', {'user': user})
+
+
 class AddDonationView(LoginRequiredMixin, View):
 
     def get(self, request):
