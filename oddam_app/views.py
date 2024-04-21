@@ -97,6 +97,13 @@ class LogoutView(View):
         return redirect('index')
 
 
+class UserPageView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        user = request.user
+        return render(request, 'user_page.html', {'user': user})
+
+
 class AddDonationView(LoginRequiredMixin, View):
 
     def get(self, request):
@@ -111,7 +118,7 @@ class AddDonationView(LoginRequiredMixin, View):
 
 class ConfirmationView(LoginRequiredMixin, View):
     def validate_postcode(self, request, zip_code):
-      return len(zip_code) == 6 and zip_code[:1].isnumeric() and zip_code[2] == "-" and zip_code[3:].isnumeric()
+        return len(zip_code) == 6 and zip_code[:1].isnumeric() and zip_code[2] == "-" and zip_code[3:].isnumeric()
 
     def validate_form(self, request, form_data):
 
