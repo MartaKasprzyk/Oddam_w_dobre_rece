@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <h2>Zaktualizuj status Twoich darów</h2>
+
+    <div class="user-page"><b>Dary: </b> {% for category in donation.categories.all %}
+        {{ category }},
+    {% endfor %}</div>
+    <br>
+    <div class="user-page"><b>Wspierasz: </b> {{ donation.institution.name }}</div>
+    <br>
+    <div class="user-page"><b>Planowana data odbioru: </b> {{ donation.pick_up_date }}</div>
+    <br>
+    <div class="user-page"><b>Planowana godzina odbioru: </b> {{ donation.pick_up_time }}</div>
+    <br>
+    <div class="user-page" id="last">
+        <form method="post" class="status-update">
+            {% csrf_token %}
+            <b>Zostały odebrane:</b> {% for key, value in donation.CHOICES %}
+            <div class="radio-container">
+            <input type="radio" name="picked_up" value="{{ key }}"
+                    {% if key == donation.picked_up %} checked {% endif %}>
+                <label>{{ value }}</label><br></div>{% endfor %}
+            <input type="submit" class="btn" value="Potwierdź">
+        </form>
+    </div>
+
+{% endblock %}

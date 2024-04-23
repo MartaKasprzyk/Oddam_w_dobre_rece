@@ -101,7 +101,28 @@ class UserPageView(LoginRequiredMixin, View):
 
     def get(self, request):
         user = request.user
-        return render(request, 'user_page.html', {'user': user})
+        donations = Donation.objects.filter(user=user).order_by('picked_up', 'pick_up_date', 'created')
+        return render(request, 'user_page.html', {'user': user, 'donations': donations})
+
+
+class UserPageUpdateDonationView(LoginRequiredMixin, View):
+
+    def test_func(self):
+        user = self.request.user
+        donation = Donation.objects.get(pk=self.kwargs['pk'])
+        return donation.user == user
+
+    def get(self, request, pk):
+        donation = Donation.objects.get(pk=pk)
+        return render(request, 'donation_update_status.html', {'donation': donation})
+
+    def post(self, request, pk):
+        donation = Donation.objects.get(pk=pk)
+        update_status = request.POST.get('picked_up')
+        donation.picked_up = update_status
+        donation.save()
+
+        return redirect('user_page')
 
 
 class AddDonationView(LoginRequiredMixin, View):
@@ -118,7 +139,7 @@ class AddDonationView(LoginRequiredMixin, View):
 
 class ConfirmationView(LoginRequiredMixin, View):
     def validate_postcode(self, request, zip_code):
-      return len(zip_code) == 6 and zip_code[:1].isnumeric() and zip_code[2] == "-" and zip_code[3:].isnumeric()
+        return len(zip_code) == 6 and zip_code[:1].isnumeric() and zip_code[2] == "-" and zip_code[3:].isnumeric()
 
     def validate_form(self, request, form_data):
 
