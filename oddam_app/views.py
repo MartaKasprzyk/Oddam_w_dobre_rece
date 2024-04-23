@@ -101,7 +101,7 @@ class UserPageView(LoginRequiredMixin, View):
 
     def get(self, request):
         user = request.user
-        donations = Donation.objects.filter(user=user).order_by('picked_up', 'pick_up_date', 'created')
+        donations = Donation.objects.filter(user=user).order_by('created', 'pick_up_date', 'is_taken')
         return render(request, 'user_page.html', {'user': user, 'donations': donations})
 
 
@@ -118,7 +118,7 @@ class UserPageUpdateDonationView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
         donation = Donation.objects.get(pk=pk)
-        update_status = request.POST.get('picked_up')
+        update_status = request.POST.get('is_taken')
         donation.picked_up = update_status
         donation.save()
 

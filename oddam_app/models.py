@@ -42,5 +42,5 @@ class Donation(models.Model):
     pick_up_comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
-    picked_up = models.IntegerField(choices=CHOICES, default=2)
+    is_taken = models.IntegerField(choices=CHOICES, default=2)
 

@@ -21,7 +21,7 @@
             <b>Zostały odebrane:</b> {% for key, value in donation.CHOICES %}
             <div class="radio-container">
             <input type="radio" name="picked_up" value="{{ key }}"
-                    {% if key == donation.picked_up %} checked {% endif %}>
+                    {% if key == donation.is_taken %} checked {% endif %}>
                 <label>{{ value }}</label><br></div>{% endfor %}
             <input type="submit" class="btn" value="Potwierdź">
         </form>
