@@ -1853,9 +1853,23 @@ footer .bottom-line--icons a img {
 }
 
 .donation-table tbody tr:hover{
-  background-color: #fdd52c;
+  background-color: #ebebeb;
 }
 
 .donation-table td{
   padding: 10px;
 }
+
+.status-update{
+  display: block;
+}
+
+.radio-container {
+  padding: 10px;
+  display: inline-block;
+}
+
+.radio-container input[type="radio"] {
+  margin-right: 5px;
+}
+
