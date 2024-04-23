@@ -101,7 +101,7 @@ class UserPageView(LoginRequiredMixin, View):
 
     def get(self, request):
         user = request.user
-        donations = Donation.objects.filter(user=user)
+        donations = Donation.objects.filter(user=user).order_by('picked_up', 'pick_up_date', 'created')
         return render(request, 'user_page.html', {'user': user, 'donations': donations})
 
 
