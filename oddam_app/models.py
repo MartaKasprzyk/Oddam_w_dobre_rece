@@ -43,4 +43,5 @@ class Donation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     is_taken = models.IntegerField(choices=CHOICES, default=2)
+    updated = models.DateTimeField(auto_now=True, blank=True, null=True)
 
