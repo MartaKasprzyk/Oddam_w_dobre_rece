@@ -39,7 +39,7 @@
                         {% else %} 
                         {{ donation.pick_up_comment }}
                         {% endif %}</td>
-                    <td>{{ donation.get_picked_up_display }} <br>
+                    <td>{{ donation.get_is_taken_display }} <br>
                         <button class="btn">
                          <a class="style" href="{% url "donation_update_status" pk=donation.pk %}">Zaktualizuj</a>
                         </button></td>

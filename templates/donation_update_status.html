@@ -20,11 +20,12 @@
             {% csrf_token %}
             <b>Zostały odebrane:</b> {% for key, value in donation.CHOICES %}
             <div class="radio-container">
-            <input type="radio" name="picked_up" value="{{ key }}"
-                    {% if key == donation.picked_up %} checked {% endif %}>
+            <input type="radio" name="is_taken" value="{{ key }}"
+                    {% if key == donation.is_taken %} checked {% endif %}>
                 <label>{{ value }}</label><br></div>{% endfor %}
             <input type="submit" class="btn" value="Potwierdź">
         </form>
     </div>
+    <div class="user-page"><b>Zaktualizowano: </b> {{ donation.updated }}</div>
 
 {% endblock %}
