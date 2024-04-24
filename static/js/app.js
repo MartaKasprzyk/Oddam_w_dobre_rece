@@ -493,4 +493,18 @@ document.addEventListener("DOMContentLoaded", function() {
   if (form !== null) {
     new FormSteps(form);
   }
+
+  /**
+   * Change color of taken donations in the donations list (MK)
+   */
+  const rows = document.querySelectorAll('.donation-table tbody tr');
+
+  rows.forEach(row => {
+    const tdAll = row.querySelectorAll('td');
+    const lastTd = tdAll[tdAll.length - 1];
+
+    if (lastTd.innerText.includes("TAK")) {
+      row.style.color = '#D3D3D3';
+    }
+  });
 });
