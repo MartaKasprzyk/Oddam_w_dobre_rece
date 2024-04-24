@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import View
 from oddam_app.models import Donation, Institution, Category
 from django.db.models import Sum
@@ -9,6 +11,8 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 import datetime
 import time
+from .forms import ChangePasswordForm
+from django import forms
 
 
 class LandingPageView(View):
@@ -28,7 +32,7 @@ class LandingPageView(View):
         return render(request, 'index.html', context)
 
 
-class RegisterView(View):
+class PasswordHandlingMixin:
     def validate_password(self, request, password):
         lst = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '-', '=', '{', '}',
                '[', ']', '|', '\\', ':', '"', ';', "'", '<', '>', '?', ',', '.', '/', '"']
@@ -40,6 +44,32 @@ class RegisterView(View):
                 any(x for x in password if x in lst)
                 )
 
+    def password_set(self, request, user, password, password2, template, redirect_template):
+        try:
+            if password != password2:
+                return render(request, template, {'error': 'Hasła różnią się! '
+                                                           'Spróbuj ponownie.'})
+            else:
+                validated_password = self.validate_password(request, password)
+                if validated_password:
+                    user.set_password(password)
+                    user.save()
+
+                    return redirect(redirect_template)
+
+                else:
+                    error = ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
+                             'cyfrę i znak spacjalny. Spróbuj ponownie.')
+
+                    return render(request, template, {'error': error})
+
+        except IntegrityError:
+            error = 'Konto z podanym adresem e-mail już istnieje. Spróbuj ponownie.'
+            return render(request, template, {'error': error})
+
+
+class RegisterView(PasswordHandlingMixin, View):
+
     def get(self, request):
         return render(request, 'register.html')
 
@@ -50,28 +80,9 @@ class RegisterView(View):
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
 
-        try:
-            if password != password2:
-                return render(request, 'register.html', {'error': 'Hasła różnią się! '
-                                                                  'Spróbuj ponownie.'})
-            else:
-                validated_password = self.validate_password(request, password)
-                if validated_password:
-                    user = User.objects.create(first_name=first_name, last_name=last_name, username=username)
-                    user.set_password(password)
-                    user.save()
+        user = User.objects.create(first_name=first_name, last_name=last_name, username=username)
 
-                    return redirect("login")
-
-                else:
-                    error = ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
-                             'cyfrę i znak spacjalny. Spróbuj ponownie.')
-
-                    return render(request, 'register.html', {'error': error})
-
-        except IntegrityError:
-            error = 'Konto z podanym adresem e-mail już istnieje. Spróbuj ponownie.'
-            return render(request, 'register.html', {'error': error})
+        return self.password_set(request, user, password, password2, 'register.html', 'login')
 
 
 class LoginView(View):
@@ -105,7 +116,7 @@ class UserPageView(LoginRequiredMixin, View):
         return render(request, 'user_page.html', {'user': user, 'donations': donations})
 
 
-class UserPageUpdateDonationView(LoginRequiredMixin, View):
+class UserPageUpdateDonationView(UserPassesTestMixin, View):
 
     def test_func(self):
         user = self.request.user
@@ -123,6 +134,47 @@ class UserPageUpdateDonationView(LoginRequiredMixin, View):
         donation.save()
 
         return redirect('user_page')
+
+
+class UserSettingsView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        user = request.user
+        return render(request, 'settings.html', {'user': user})
+
+    def post(self, request):
+        user = request.user
+        first_name = request.POST.get('name')
+        last_name = request.POST.get('surname')
+        username = request.POST.get('email')
+        password_old = request.POST.get('password_old')
+
+        get_user = User.objects.get(pk=user.id)
+
+        if check_password(password_old, get_user.password):
+            user.first_name = first_name
+            user.last_name = last_name
+            user.username = username
+            user.save()
+
+        return render(request, 'settings.html', {'user': user})
+
+
+class ChangePasswordView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        form = ChangePasswordForm(user)
+        return render(request, 'change_password.html', {'form': form})
+
+    def post(self, request):
+        user = request.user
+        form = ChangePasswordForm(user, request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+        else:
+            return redirect('settings')
 
 
 class AddDonationView(LoginRequiredMixin, View):
