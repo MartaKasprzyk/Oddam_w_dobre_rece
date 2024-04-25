@@ -141,19 +141,29 @@ class UserSettingsView(LoginRequiredMixin, View):
 
     def post(self, request):
         user = request.user
-        first_name = request.POST.get('name')
-        last_name = request.POST.get('surname')
-        username = request.POST.get('email')
+        new_first_name = request.POST.get('name')
+        new_last_name = request.POST.get('surname')
+        new_username = request.POST.get('email')
         password_old = request.POST.get('password_old')
 
         get_user = User.objects.get(pk=user.id)
+        get_current_username = User.objects.get(username=user.username)
 
         if check_password(password_old, get_user.password):
-            user.first_name = first_name
-            user.last_name = last_name
-            user.username = username
-            user.save()
-
+            if User.objects.filter(username=new_username).exclude(username=get_current_username).exists():
+                messages.error(request, "Konto o podanym adresie e-mail już istnieje. Spróbuj ponownie.")
+            else:
+                user.first_name = new_first_name
+                user.last_name = new_last_name
+                user.username = new_username
+                user.save()
+                messages.success(request, "Dane zostały zaktualizowane.")
+        elif password_old == '':
+            messages.error(request, "Nie wpisano hasła. Spróbuj ponownie.")
+        else:
+            messages.error(request, "Niepoprawne hasło.")
+            logout(request)
+            return redirect('login')
         return render(request, 'user_settings.html', {'user': user})
 
 
