@@ -44,8 +44,8 @@ class PasswordHandlingMixin:
     def password_set(self, request, user, password, password2, template, redirect_template):
         try:
             if password != password2:
-                return render(request, template, {'error': 'Hasła różnią się! '
-                                                           'Spróbuj ponownie.'})
+                messages.error(request, 'Hasła różnią się! Spróbuj ponownie.')
+                return render(request, template)
             else:
                 validated_password = self.validate_password(request, password)
                 if validated_password:
@@ -55,14 +55,13 @@ class PasswordHandlingMixin:
                     return redirect(redirect_template)
 
                 else:
-                    error = ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
-                             'cyfrę i znak spacjalny. Spróbuj ponownie.')
-
-                    return render(request, template, {'error': error})
+                    messages.error(request, 'Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
+                                   'cyfrę i znak spacjalny. Spróbuj ponownie.')
+                    return render(request, template)
 
         except IntegrityError:
-            error = 'Konto z podanym adresem e-mail już istnieje. Spróbuj ponownie.'
-            return render(request, template, {'error': error})
+            messages.error(request, 'Konto z podanym adresem e-mail już istnieje. Spróbuj ponownie.')
+            return render(request, template)
 
 
 class RegisterView(PasswordHandlingMixin, View):
