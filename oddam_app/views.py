@@ -29,7 +29,7 @@ class LandingPageView(View):
         return render(request, 'index.html', context)
 
 
-class PasswordHandlingMixin:
+class PasswordValidationMixin:
     def validate_password(self, request, password):
         lst = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '-', '=', '{', '}',
                '[', ']', '|', '\\', ':', '"', ';', "'", '<', '>', '?', ',', '.', '/', '"']
@@ -41,30 +41,8 @@ class PasswordHandlingMixin:
                 any(x for x in password if x in lst)
                 )
 
-    def password_set(self, request, user, password, password2, template, redirect_template):
-        try:
-            if password != password2:
-                messages.error(request, 'Hasła różnią się! Spróbuj ponownie.')
-                return render(request, template)
-            else:
-                validated_password = self.validate_password(request, password)
-                if validated_password:
-                    user.set_password(password)
-                    user.save()
 
-                    return redirect(redirect_template)
-
-                else:
-                    messages.error(request, 'Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
-                                   'cyfrę i znak spacjalny. Spróbuj ponownie.')
-                    return render(request, template)
-
-        except IntegrityError:
-            messages.error(request, 'Konto z podanym adresem e-mail już istnieje. Spróbuj ponownie.')
-            return render(request, template)
-
-
-class RegisterView(PasswordHandlingMixin, View):
+class RegisterView(PasswordValidationMixin, View):
 
     def get(self, request):
         return render(request, 'register.html')
@@ -76,13 +54,30 @@ class RegisterView(PasswordHandlingMixin, View):
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Konto o podanym adresie e-mail już istnieje. Spróbuj ponownie lub zaloguj się.")
+        try:
+            if password != password2:
+                messages.error(request, 'Hasła różnią się! Spróbuj ponownie.')
+                return render(request, 'register.html')
+            else:
+                validated_password = self.validate_password(request, password)
+
+                if validated_password:
+                    user = User.objects.create(first_name=first_name, last_name=last_name, username=username)
+                    user.set_password(password)
+                    user.save()
+                    messages.success(request, "Konto użytkownika zostało utworzone. Zaloguj się.")
+                    return redirect("login")
+
+                else:
+                    messages.error(request, 'Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
+                                            'cyfrę i znak spacjalny. Spróbuj ponownie.')
+
+                    return render(request, 'register.html')
+
+        except IntegrityError:
+            messages.error(request, "Konto o podanym adresie e-mail już istnieje. "
+                                    "Spróbuj ponownie lub zaloguj się.")
             return render(request, 'register.html')
-        else:
-            user = User.objects.create(first_name=first_name, last_name=last_name, username=username)
-            messages.success(request, "Konto użytkownika zostało utworzone. Zaloguj się.")
-            return self.password_set(request, user, password, password2, 'register.html', 'login')
 
 
 class LoginView(View):
