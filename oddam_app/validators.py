@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 
 
-class CustomPasswordValidator():
+class CustomPasswordValidator:
 
     def validate(self, password, user=None):
         lst = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '-', '=', '{', '}',
@@ -12,7 +12,7 @@ class CustomPasswordValidator():
             raise ValidationError('Hasło musi zawierac małą literę.')
         if not any(x for x in password if x.isdigit()):
             raise ValidationError('Hasło musi zawierać cyfrę.')
-        if any(x for x in password if x in lst):
+        if not any(x for x in password if x in lst):
             raise ValidationError('Hasło musi zawierać znak specjalny')
 
     def get_help_text(self):
