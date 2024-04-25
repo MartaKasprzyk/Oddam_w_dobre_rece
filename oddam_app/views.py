@@ -2,17 +2,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
 from django.views import View
 from oddam_app.models import Donation, Institution, Category
 from django.db.models import Sum
 from django.db import IntegrityError
 from django.contrib.auth.models import User
-from django.http import JsonResponse
 import datetime
-import time
 from .forms import ChangePasswordForm
-from django import forms
+from django.contrib import messages
 
 
 class LandingPageView(View):
@@ -140,7 +137,7 @@ class UserSettingsView(LoginRequiredMixin, View):
 
     def get(self, request):
         user = request.user
-        return render(request, 'settings.html', {'user': user})
+        return render(request, 'user_settings.html', {'user': user})
 
     def post(self, request):
         user = request.user
@@ -157,7 +154,7 @@ class UserSettingsView(LoginRequiredMixin, View):
             user.username = username
             user.save()
 
-        return render(request, 'settings.html', {'user': user})
+        return render(request, 'user_settings.html', {'user': user})
 
 
 class ChangePasswordView(LoginRequiredMixin, View):
@@ -172,9 +169,12 @@ class ChangePasswordView(LoginRequiredMixin, View):
 
         if form.is_valid():
             form.save()
+            messages.success(request, "Hasło zostało zmienione. Zaloguj się ponownie.")
             return redirect('login')
         else:
-            return redirect('settings')
+            for error in list(form.errors.values()):
+                messages.error(request, error)
+            return redirect('user_settings')
 
 
 class AddDonationView(LoginRequiredMixin, View):
