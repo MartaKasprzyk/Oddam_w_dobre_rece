@@ -98,14 +98,16 @@ class LoginView(View):
         if user is not None:
             login(request, user)
             return redirect(url)
-        return render(request, 'register.html', {'error': 'Nie ma takiego użytkownika. '
-                                                          'Zarejestruj się.'})
+        else:
+            messages.error(request, "Logowanie nie powiodło się. Zarejestruj się lub spróbuj ponownie.")
+            return render(request, 'register.html')
 
 
 class LogoutView(View):
 
     def get(self, request):
         logout(request)
+        messages.success(request, "Poprawne wylogowanie.")
         return redirect('index')
 
 
