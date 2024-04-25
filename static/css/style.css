@@ -1873,3 +1873,25 @@ footer .bottom-line--icons a img {
   margin-right: 5px;
 }
 
+.settings{
+  display: ruby-text;
+  padding: 20px;
+}
+
+/* custom Django messages styling */
+.messages{
+  font-size: 18px;
+}
+
+.error{
+  color: #8B0000;
+  background-color: #ffcccc;
+  padding: 10px;
+}
+
+.success{
+  color: #194d19;
+  background-color: #d9f2d9;
+  padding: 10px;
+}
+

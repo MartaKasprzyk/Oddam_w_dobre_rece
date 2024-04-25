@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <section>
+        <h2>Ustawienia</h2>
+        <div class="form--steps-container settings">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-section form-section--columns">
+                    <div class="form-section--column">
+                        <h4>Twoje dane</h4>
+                        <div class="form-group form-group--inline">
+                            <label> Imię <input type="text" name="name" value="{{ user.first_name }}"/> </label>
+                        </div>
+
+                        <div class="form-group form-group--inline">
+                            <label> Nazwisko <input type="text" name="surname" value="{{ user.last_name }}"/> </label>
+                        </div>
+
+                        <div class="form-group form-group--inline">
+                            <label>
+                                E-mail <input type="email" name="email" value="{{ user.username }}"/>
+                            </label>
+                        </div>
+
+                        <div class="form-group form-group--inline">
+                            <label> Hasło <input type="password" name="password_old" placeholder="Podaj hasło"/>
+                            </label>
+                        </div>
+
+                        <div class="form-group form-group--buttons">
+                            <button type="submit" class="btn">Zapisz</button>
+                            <button class="btn"><a href="{% url 'change_password' %}">Zmień hasło</a></button> 
+                        </div>
+                    </div>
+                </div>
+                
+            </form>            
+        </div>
+    </section>
+
+{% endblock content %}

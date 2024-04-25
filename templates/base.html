@@ -24,7 +24,7 @@
                       Witaj  {{ user.first_name }}
                       <ul class="dropdown">
                           <li><a href="{% url 'user_page' %}">Profil</a></li>
-                          <li><a href="#">Ustawienia</a></li>
+                          <li><a href="{% url 'user_settings' %}">Ustawienia</a></li>
                           <li><a href="{%  url 'admin:index' %}">Panel administracyjny</a></li>
                           <li><a href="{% url 'logout' %}">Wyloguj</a></li>
                       </ul>
@@ -34,7 +34,7 @@
                       Witaj  {{ user.first_name }}
                       <ul class="dropdown">
                           <li><a href="{% url 'user_page' %}">Profil</a></li>
-                          <li><a href="#">Ustawienia</a></li>                          
+                          <li><a href="{% url 'user_settings' %}">Ustawienia</a></li>                          
                           <li><a href="{% url 'logout' %}">Wyloguj</a></li>
                       </ul>
                   </li>    
@@ -54,7 +54,20 @@
           <li><a href="{% url 'index' %}#contact" class="btn btn--without-border">Kontakt</a></li>
         </ul>
       </nav>
-
+  
+<!-- //--------------------------- Django messages start -------------------------// -->   
+      <div>
+         {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+            {% endfor %}
+        </div>
+      {% endif %}  
+      </div>     
+<!-- //--------------------------- Django messages end  -----_--------------------// -->
+  
+  
       {% block header-bottom %}{% endblock header-bottom %}
   </header>
 <!-- //--------------------------- header end -------------------------// -->   
