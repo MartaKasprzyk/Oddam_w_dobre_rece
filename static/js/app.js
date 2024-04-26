@@ -272,6 +272,8 @@ document.addEventListener("DOMContentLoaded", function() {
       formInputs.bagsInput.addEventListener('input', function () {
         if (formInputs.bagsInput.value.trim() !== '' && parseInt(formInputs.bagsInput.value.trim()) > 0) {
           btnNextStep[1].disabled = false;
+        } else {
+          btnNextStep[1].disabled = true;
         }
       })
 
@@ -311,6 +313,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (isAddressValid && isCityValid && isPostcodeValid && isPhoneValid && isDateTimeValid) {
               btnNextStep[3].disabled = false;
+            } else {
+              btnNextStep[3].disabled = true;
             }
         })
       });
