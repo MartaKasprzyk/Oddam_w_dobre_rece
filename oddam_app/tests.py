@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
 
-from oddam_app.models import Donation, Category, Institution
+from oddam_app.models import Donation
+from django.contrib.messages import get_messages
 
 
 @pytest.mark.django_db
@@ -47,9 +48,10 @@ def test_login_view_post_wrong_password(user):
         'password': '12345'
     }
     response = client.post(url, data, follow=True)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == 'Nie ma takiego użytkownika. Zarejestruj się.'
-
+    assert len(messages) == 1
+    assert str(messages[0]) == "Logowanie nie powiodło się. Zarejestruj się lub spróbuj ponownie."
 
 @pytest.mark.django_db
 def test_login_view_post_wrong_username(user):
@@ -59,8 +61,10 @@ def test_login_view_post_wrong_username(user):
         'email': 'wrong_user@mail.com',
         'password': 'Password1@#'}
     response = client.post(url, data, follow=True)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == 'Nie ma takiego użytkownika. Zarejestruj się.'
+    assert len(messages) == 1
+    assert str(messages[0]) == "Logowanie nie powiodło się. Zarejestruj się lub spróbuj ponownie."
 
 
 @pytest.mark.django_db
@@ -69,7 +73,10 @@ def test_logout_view_get(user):
     client.force_login(user)
     url = reverse("logout")
     response = client.get(url, follow=True)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
+    assert len(messages) == 1
+    assert str(messages[0]) == "Poprawne wylogowanie."
     assert not response.context['user'].is_authenticated
 
 
@@ -92,8 +99,10 @@ def test_register_view_post_passwords_different():
         'password2': 'aaaaaaa'
     }
     response = client.post(url, data)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == "Hasła różnią się! Spróbuj ponownie."
+    assert len(messages) == 1
+    assert str(messages[0]) == "Hasła różnią się! Spróbuj ponownie."
 
 
 @pytest.mark.django_db
@@ -108,9 +117,12 @@ def test_register_view_post_success():
         'password2': 'Password1@'
     }
     response = client.post(url, data, follow=True)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
     check_user = User.objects.get(first_name='Name', last_name='Surname', username="user@mail.com")
     assert check_user
+    assert len(messages) == 1
+    assert str(messages[0]) == "Konto użytkownika zostało utworzone. Zaloguj się."
 
 
 @pytest.mark.django_db
@@ -125,8 +137,10 @@ def test_register_view_post_username_exists(user):
         'password2': 'Password1@'
     }
     response = client.post(url, data)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == 'Konto z podanym adresem e-mail już istnieje. Spróbuj ponownie.'
+    assert len(messages) == 1
+    assert str(messages[0]) == "Konto o podanym adresie e-mail już istnieje. Spróbuj ponownie lub zaloguj się."
 
 
 @pytest.mark.django_db
@@ -141,9 +155,11 @@ def test_register_view_post_password_no_big_letter():
         'password2': 'password1@'
     }
     response = client.post(url, data)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
-                                         'cyfrę i znak spacjalny. Spróbuj ponownie.')
+    assert len(messages) == 1
+    assert str(messages[0]) == ("Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, "
+                                "cyfrę i znak spacjalny. Spróbuj ponownie.")
 
 
 @pytest.mark.django_db
@@ -158,9 +174,11 @@ def test_register_view_post_password_no_small_letter():
         'password2': 'PASSWORD1@'
     }
     response = client.post(url, data)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
-                                         'cyfrę i znak spacjalny. Spróbuj ponownie.')
+    assert len(messages) == 1
+    assert str(messages[0]) == ("Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, "
+                                "cyfrę i znak spacjalny. Spróbuj ponownie.")
 
 
 @pytest.mark.django_db
@@ -175,9 +193,11 @@ def test_register_view_post_password_no_number():
         'password2': 'Password#@'
     }
     response = client.post(url, data)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
-                                         'cyfrę i znak spacjalny. Spróbuj ponownie.')
+    assert len(messages) == 1
+    assert str(messages[0]) == ("Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, "
+                                "cyfrę i znak spacjalny. Spróbuj ponownie.")
 
 
 @pytest.mark.django_db
@@ -192,9 +212,11 @@ def test_register_view_post_password_no_special_character():
         'password2': 'Password11'
     }
     response = client.post(url, data)
+    messages = list(get_messages(response.wsgi_request))
     assert response.status_code == 200
-    assert response.context['error'] == ('Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, '
-                                         'cyfrę i znak spacjalny. Spróbuj ponownie.')
+    assert len(messages) == 1
+    assert str(messages[0]) == ("Hasło musi mieć długość min. 8 znaków, zawierać dużą i małą literę, "
+                                "cyfrę i znak spacjalny. Spróbuj ponownie.")
 
 
 @pytest.mark.django_db
