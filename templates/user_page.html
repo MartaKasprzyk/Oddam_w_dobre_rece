@@ -7,9 +7,11 @@
         <div class="user-page"><b>Nazwisko: </b> {{ user.last_name }}</div><br>
         <div class="user-page"><b>E-mail: </b> {{ user.username }}</div><br>
     </section>
-
+    
+    
     <section>
         <h2>Twoje dary</h2>
+        {% if donations %}
         <table class="donation-table">
             <thead>
                 <th>Data utworzenia</th>
@@ -47,5 +49,16 @@
             {% endfor %}
             </tbody>
         </table>
+        {% else %}
+            
+            <div class="user-page">Brak danych.</div><br>
+            <div class="user-page">
+                <button class="btn">
+                    <a class="style" href="{% url 'add_donation' %}">Przekaż dary</a>
+                </button>
+            </div>           
+            
+        {% endif %}        
     </section>
+    
 {% endblock content %}

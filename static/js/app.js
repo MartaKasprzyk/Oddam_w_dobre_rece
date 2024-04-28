@@ -248,6 +248,7 @@ document.addEventListener("DOMContentLoaded", function() {
       return {categoryCheckboxes, bagsInput, institutions, address, city, postcode, phone, date, time};
     }
 
+
     // form validation (MK)
     validateForm() {
       const formInputs = this.getFormInputs();
@@ -268,12 +269,29 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       });
 
+      const helpBlock = document.createElement('span');
+      helpBlock.className = 'help-block';
+      helpBlock.style.display = 'none';
+      helpBlock.style.fontSize = '18px';
+      helpBlock.style.color = 'red';
+      helpBlock.id = 'error-message';
+
       // validate bags input (MK)
+      let helpBags = helpBlock.cloneNode(true)
       formInputs.bagsInput.addEventListener('input', function () {
-        if (formInputs.bagsInput.value.trim() !== '' && parseInt(formInputs.bagsInput.value.trim()) > 0) {
+        if (this.value.trim() !== '' && parseInt(this.value.trim()) > 0) {
           btnNextStep[1].disabled = false;
+          helpBags.remove();
+        } else {
+          if (formInputs.bagsInput.parentElement.nextElementSibling === null) {
+            formInputs.bagsInput.parentElement.insertAdjacentElement('afterend', helpBags);
+          }
+          btnNextStep[1].disabled = true;
+          helpBags.textContent = 'Ilość worków musi być większa od 0.';
+          helpBags.style.display = 'block';
         }
-      })
+      });
+
 
       // validate if institution is chosen (MK)
       formInputs.institutions.forEach(checkbox => {
@@ -284,39 +302,133 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       });
 
-      // validate pick up info (MK)
-      const pickUpInfo = [];
-      pickUpInfo.push(formInputs.address, formInputs.city, formInputs.postcode,
-          formInputs.phone, formInputs.date, formInputs.time)
 
-      const postCodePattern = /^\d{2}-\d{3}$/;
+      // validate address input (MK)
+      let helpAddress = helpBlock.cloneNode(true)
       const alphanumericAddress = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
+      formInputs.address.addEventListener('input', function () {
+        if (formInputs.address.value.trim() !== '' && alphanumericAddress.test(formInputs.address.value.trim())) {
+          helpAddress.remove();
+        } else {
+          if (formInputs.address.parentElement.nextElementSibling === null) {
+            formInputs.address.parentElement.insertAdjacentElement('afterend', helpAddress);
+          }
+          btnNextStep[3].disabled = true;
+          helpAddress.textContent = 'Podaj nazwę ulicy i numer domu.';
+          helpAddress.style.display = 'block';
+        }
+      });
 
-    // enable possible pick up date starting from tomorrow (MK)
+      // validate city input (MK)
+      let helpCity = helpBlock.cloneNode(true)
+      formInputs.city.addEventListener('input', function () {
+
+        if (formInputs.city.value.trim() !== '') {
+          helpCity.remove();
+        } else {
+          if (formInputs.city.parentElement.nextElementSibling === null) {
+            formInputs.city.parentElement.insertAdjacentElement('afterend', helpCity);
+          }
+          btnNextStep[3].disabled = true;
+          helpCity.textContent = 'Podaj miasto.';
+          helpCity.style.display = 'block';
+        }
+      });
+
+      // validate postcode input (MK)
+      let helpCode = helpBlock.cloneNode(true)
+      const postCodePattern = /^\d{2}-\d{3}$/;
+      formInputs.postcode.addEventListener('input', function () {
+
+
+        if (formInputs.postcode.value.trim() !== '' && postCodePattern.test(formInputs.postcode.value.trim())) {
+          helpCode.remove();
+        } else {
+          if (formInputs.postcode.parentElement.nextElementSibling === null) {
+            formInputs.postcode.parentElement.insertAdjacentElement('afterend', helpCode);
+          }
+          btnNextStep[3].disabled = true;
+          helpCode.textContent = 'Format: XX-XXX np. 60-200';
+          helpCode.style.display = 'block';
+        }
+      });
+
+      // validate phone input (MK)
+      let helpPhone = helpBlock.cloneNode(true)
+      formInputs.phone.addEventListener('input', function () {
+
+        if (formInputs.phone.value.trim().length === 9 && parseInt(formInputs.phone.value.trim()) > 0) {
+          helpPhone.remove();
+        } else {
+          if (formInputs.phone.parentElement.nextElementSibling === null) {
+            formInputs.phone.parentElement.insertAdjacentElement('afterend', helpPhone);
+          }
+          btnNextStep[3].disabled = true;
+          helpPhone.textContent = 'Numer telefonu musi zawierać 9 cyfr.';
+          helpPhone.style.display = 'block';
+        }
+      });
+
+      // validate date  input (MK)
+      // enable possible pick up date starting from tomorrow (MK)
       let today = new Date();
           today = new Date(today.setDate(today.getDate() + 1)).toISOString().split('T')[0];
       formInputs.date.min = today;
 
-      pickUpInfo.forEach(element => {
-        element.addEventListener('input', function () {
-            const isAddressValid = formInputs.address.value.trim() !== '' &&
-                alphanumericAddress.test(formInputs.address.value.trim());
-            const isCityValid = formInputs.city.value.trim() !== '';
-            const isPostcodeValid = formInputs.postcode.value.trim() !== '' &&
-                postCodePattern.test(formInputs.postcode.value.trim());
-            const isPhoneValid = formInputs.phone.value.trim().length === 9 &&
-                parseInt(formInputs.phone.value.trim()) > 0;
-            const isDateTimeValid = formInputs.date.value && formInputs.time.value;
+      let helpDate = helpBlock.cloneNode(true)
+      formInputs.date.addEventListener('input', function () {
 
-
-            if (isAddressValid && isCityValid && isPostcodeValid && isPhoneValid && isDateTimeValid) {
-              btnNextStep[3].disabled = false;
-            }
-        })
+        if (formInputs.date.value && formInputs.date.value !== '') {
+          helpDate.remove();
+        } else {
+          if (formInputs.date.parentElement.nextElementSibling === null) {
+            formInputs.date.parentElement.insertAdjacentElement('afterend', helpDate);
+          }
+          btnNextStep[3].disabled = true;
+          helpDate.textContent = 'Wybierz datę.';
+          helpDate.style.display = 'block';
+        }
       });
 
+      // validate time  input (MK)
+      let helpTime = helpBlock.cloneNode(true)
+      formInputs.time.addEventListener('input', function () {
 
+        if (formInputs.time.value && formInputs.time.value !== '') {
+          helpTime.remove();
+        } else {
+          if (formInputs.time.parentElement.nextElementSibling === null) {
+            formInputs.time.parentElement.insertAdjacentElement('afterend', helpTime);
+          }
+              btnNextStep[3].disabled = true;
+          helpTime.textContent = 'Wybierz godzinę.';
+          helpTime.style.display = 'block';
+        }
+      });
+
+      const pickUpInfo = [];
+      form.addEventListener('change', function () {
+        pickUpInfo.push(formInputs.address, formInputs.city, formInputs.postcode,
+            formInputs.phone, formInputs.date, formInputs.time)
+
+        let formFilled = false
+        for (let i = 0; i < pickUpInfo.length; i++) {
+          if (pickUpInfo[i].value === null || pickUpInfo[i].value === '') {
+            break;
+          }
+          if (i === pickUpInfo.length - 1) {
+            formFilled = true
+          }
+        }
+
+        if (document.querySelector("#error-message") || !formFilled) {
+          btnNextStep[3].disabled = true;
+        } else {
+          btnNextStep[3].disabled = false;
+        }
+      })
     }
+
     /**
      * Update form front-end
      * Show next or previous section etc.
